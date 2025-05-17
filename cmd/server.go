@@ -17,7 +17,7 @@ type Server struct {
 	l    net.Listener
 }
 
-func NewServer(l net.Listener, mux, http.Handler) *Server {
+func NewServer(l net.Listener, mux http.Handler) *Server {
 	return &Server{
 		srv: &http.server{Handler: mux},
 		l:   l,
