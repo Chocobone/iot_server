@@ -5,6 +5,10 @@ import (
 )
 
 type Config struct {
+    Env        string `env:"ENV" default:"dev"`
+    Port       int    `env:"PORT" default:"8080"`
+
+    // Home Assistant 
     Home_url   string `env:"HOME_URL" default:"http://localhost:8123` 
     Home_port  int    `env:"HOME_PORT" default:"8123"`
 
