@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/Chocobone/iot_server/config"
+	// "github.com/Chocobone/iot_server/cmd"
 )
 
 func main() {

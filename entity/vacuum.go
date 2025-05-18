@@ -14,3 +14,4 @@ const (
 
 type Vaccum struct {
 	ID string `json:"id"`
+	status VacuumStatus `json:"status"`
