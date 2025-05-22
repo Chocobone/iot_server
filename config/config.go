@@ -9,8 +9,7 @@ type Config struct {
 	Port int    `env:"PORT" default:"8080"`
 
 	// Home Assistant
-	Home_url  string `env:"HOME_URL" default:"http://localhost:8123`
-	Home_port int    `env:"HOME_PORT" default:"8123"`
+	Home_port int `env:"HOME_PORT" default:"8123"`
 
 	// Home Assistant Vacuum
 	Home_vacuum_id    string `env:"HOME_VACUUM_ID"    default:"vacuum.robosceongsogi"`
