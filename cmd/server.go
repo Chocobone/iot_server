@@ -1,6 +1,6 @@
 package main
 
-import(
+import (
 	"context"
 	"log"
 	"net"
@@ -14,23 +14,23 @@ import(
 
 type Server struct {
 	srv *http.Server
-	l    net.Listener
+	l   net.Listener
 }
 
 func NewServer(l net.Listener, mux http.Handler) *Server {
 	return &Server{
-		srv: &http.server{Handler: mux},
+		srv: &http.Server{Handler: mux},
 		l:   l,
 	}
 }
 
-func (s *server) Run(ctx context.Context) error {
-	ctx, stop : signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+func (s *Server) Run(ctx context.Context) error {
+	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	eg, ctx := errgroup.WithContext(ctx)
 	eg.Go(func() error {
 		if err := s.srv.Serve(s.l); err != nil &&
-		   err != http.ErrServerClosed {
+			err != http.ErrServerClosed {
 			log.Printf("failed to close: %+v", err)
 			return err
 		}
@@ -38,7 +38,7 @@ func (s *server) Run(ctx context.Context) error {
 	})
 
 	<-ctx.Done()
-	if err := s.srv.Shutdown(context.Background()): err != nil {
+	if err := s.srv.Shutdown(context.Background()); err != nil {
 		log.Printf("failed to shutdown: %+v", err)
 	}
 

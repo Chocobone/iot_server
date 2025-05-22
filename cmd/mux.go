@@ -15,10 +15,10 @@ func NewMux() http.Handler {
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
 	v := validator.New()
-	mux.Handle("/vacuum/start", &handler.AddTask{Validator: v})
-	mux.Handle("/vacuum/status", &handler.GetStatus{Validator: v})
-	mux.Handle("/vacuum/pause", &handler.Pause{Validator: v})
-	mux.Handle("/vacuum/return", &handler.Return{Validator: v})
+	mux.Handle("/vacuum/start", &handler.VacuumStart{Validator: v})
+	mux.Handle("/vacuum/status", &handler.VacuumStatus{Validator: v})
+	mux.Handle("/vacuum/pause", &handler.VacuumPause{Validator: v})
+	mux.Handle("/vacuum/return", &handler.VacuumReturn{Validator: v})
 
 	return mux
 }
