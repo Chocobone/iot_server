@@ -1,12 +1,12 @@
 module github.com/Chocobone/iot_server
 
-go 1.24.2
+go 1.21
 
 require (
 	github.com/caarlos0/env/v6 v6.10.1
-	github.com/go-chi/chi/v5 v5.2.1
-	github.com/go-playground/validator/v10 v10.26.0
-	golang.org/x/sync v0.14.0
+	github.com/go-chi/chi/v5 v5.0.12
+	github.com/go-playground/validator/v10 v10.19.0
+	golang.org/x/sync v0.11.0
 )
 
 require (
