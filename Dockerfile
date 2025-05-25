@@ -4,10 +4,10 @@ FROM golang:1.21-alpine AS builder
 WORKDIR /app
 
 # Copy go mod and sum files
-COPY go.mod go.sum ./
+COPY go.mod ./
 
-# Verify dependencies
-RUN go mod verify
+# Download dependencies and generate go.sum
+RUN go mod tidy && go mod download
 
 # Copy source code
 COPY . .
@@ -39,12 +39,6 @@ WORKDIR /app
 
 # Install air for hot reload
 RUN go install github.com/cosmtrek/air@latest
-
-# Copy go mod and sum files
-COPY go.mod go.sum ./
-
-# Verify dependencies
-RUN go mod verify
 
 # Copy the source code
 COPY . .
