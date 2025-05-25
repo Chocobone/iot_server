@@ -21,15 +21,18 @@ func main() {
 func run(ctx context.Context) error {
 	cfg, err := config.New()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to load config: %w", err)
 	}
+
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to listen: %w", err)
 	}
+
 	url := fmt.Sprintf("http://%s", l.Addr().String())
-	log.Printf("start with: %s", url)
-	mux := NewMux()
+	log.Printf("server starting at: %s", url)
+
+	mux := NewMux(cfg)
 	s := NewServer(l, mux)
 	return s.Run(ctx)
 }
