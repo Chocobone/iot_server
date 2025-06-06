@@ -1,32 +1,23 @@
-version: '3.8'
-
 services:
   iot_server:
+    image: iot_server
     build:
-      context: .
-      dockerfile: Dockerfile
-      target: ${BUILD_TARGET:-builder}  # Use 'dev' for development
-    ports:
-      - "8080:8080"
+      args:
+        - target=dev
     environment:
-      - ENV=dev
-      - PORT=8080
-      - HOME_URL=http://host.docker.internal:8123
-      - HOME_PORT=8123
-      - HOME_VACUUM_ID=vacuum.robosceongsogi
-      - HOME_VACUUM_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYjYwYWJkOTRlN2M0YTZjODkyMzQ3Y2JjOTgzZWUxYSIsImlhdCI6MTc0NzAyMTI5NCwiZXhwIjoyMDYyMzgxMjk0fQ.7mybkEqIh7coIRrVxkno8I1iTXCDz5wipB9rpomVUB0
+      ENV: dev
+      PORT: 8080
     volumes:
-      - .:/app  # Mount source code for development
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    restart: unless-stopped 
-  homeassistant:
-    container_name: homeassistant
-    image: "ghcr.io/home-assistant/home-assistant:stable"
-    volumes:
-      - /PATH_TO_YOUR_CONFIG:/config
-      - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro
-    restart: unless-stopped
-    privileged: true
-    network_mode: host
+      - .:/app
+    ports:
+      - "18000:8080"
+  # homeassistant:
+  #   container_name: homeassistant
+  #   image: "ghcr.io/home-assistant/home-assistant:stable"
+  #   volumes:
+  #     - /PATH_TO_YOUR_CONFIG:/config
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /run/dbus:/run/dbus:ro
+  #   restart: unless-stopped
+  #   privileged: true
+  #   network_mode: host

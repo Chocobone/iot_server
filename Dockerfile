@@ -1,50 +1,28 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.24.3 AS builder
 
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod ./
-
-# Download dependencies and generate go.sum
-RUN go mod tidy && go mod download
+# Copy go mod and sum files and download dependencies
+COPY go.mod go.sum ./
+RUN go mod download
 
 # Copy source code
 COPY . .
-
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o iot_server ./cmd/...
+# Binary build
+RUN go build -buildvcs=false -trimpath  -ldflags "-w -s" -o iot_server
 
 # Final stage
-FROM alpine:latest
+FROM alpine:latest AS deploy
 
-WORKDIR /app
+RUN apk update
 
-# Install necessary runtime dependencies
-RUN apk add --no-cache ca-certificates tzdata
-
-# Copy the binary from builder
 COPY --from=builder /app/iot_server .
 
-# Expose the port the app runs on
-EXPOSE 8080
-
-# Command to run the application
 CMD ["./iot_server"]
 
-# Development stage
-FROM golang:1.21-alpine AS dev
-
+# Development stage using Air
+FROM golang:1.24.3 AS dev
 WORKDIR /app
-
-# Install air for hot reload
-RUN go install github.com/cosmtrek/air@latest
-
-# Copy the source code
-COPY . .
-
-# Expose the port
-EXPOSE 8080
-
-# Command to run air for development
-CMD ["air", "-c", ".air.toml"]
+RUN go install github.com/air-verse/air@latest
+CMD ["air"]
