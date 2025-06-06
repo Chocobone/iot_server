@@ -10,7 +10,7 @@ RUN go mod download
 # Copy source code
 COPY . .
 # Binary build
-RUN go build -buildvcs=false -trimpath  -ldflags "-w -s" -o iot_server
+RUN go build -trimpath  -ldflags "-w -s" -o iot_server
 
 # Final stage
 FROM alpine:latest AS deploy

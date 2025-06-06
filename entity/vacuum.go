@@ -3,6 +3,7 @@ package entity
 import "time"
 
 type VaccumID int64
+type VacuumToken string
 type VacuumStatus string
 
 const (
@@ -14,23 +15,9 @@ const (
 )
 
 type Vacuum struct {
-	ID        string       `json:"id"`
+	ID        VacuumID     `json:"id"`
+	Token     VacuumToken  `json:"vacuum_token"`
 	Status    VacuumStatus `json:"status"`
 	CreatedAt time.Time    `json:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at"`
 }
-
-type VacuumRequest struct {
-	EntityID string `json:"entity_id" validate:"required"`
-}
-
-type VacuumResponse struct {
-	Status  string `json:"status"`
-	Message string `json:"message,omitempty"`
-}
-
-type VacuumCommand struct {
-	Command string `json:"command" validate:"required,oneof=start pause return"`
-}
-
-type Vacuum_command []*Vacuum

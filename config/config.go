@@ -11,10 +11,6 @@ type Config struct {
 	// Home Assistant
 	Home_host  string `env:"HOME_URL" default:"127.0.0.1`
 	Home_port int    `env:"HOME_PORT" default:"8123"`
-
-	// Home Assistant Vacuum
-	Home_vacuum_id    string `env:"HOME_VACUUM_ID"    default:"vacuum.robosceongsogi"`
-	Home_vacuum_token string `env:"HOME_VACUUM_TOKEN" default:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYjYwYWJkOTRlN2M0YTZjODkyMzQ3Y2JjOTgzZWUxYSIsImlhdCI6MTc0NzAyMTI5NCwiZXhwIjoyMDYyMzgxMjk0fQ.7mybkEqIh7coIRrVxkno8I1iTXCDz5wipB9rpomVUB0"`
 }
 
 func New() (*Config, error) {
