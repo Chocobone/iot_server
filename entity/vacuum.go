@@ -2,7 +2,7 @@ package entity
 
 import "time"
 
-type VaccumID int64
+type VacuumID int64
 type VacuumToken string
 type VacuumStatus string
 

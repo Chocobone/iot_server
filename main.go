@@ -23,16 +23,14 @@ func run(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to load config: %w", err)
 	}
-
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
-
 	url := fmt.Sprintf("http://%s", l.Addr().String())
 	log.Printf("server starting at: %s", url)
 
-	mux := NewMux(cfg)
+	mux := NewMux()
 	s := NewServer(l, mux)
 	return s.Run(ctx)
 }
