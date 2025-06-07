@@ -15,7 +15,7 @@ type VacuumStart struct {
 }
 
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
@@ -36,7 +36,7 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Send request to Home Assistant API using the service name
 	haURL := "http://127.0.0.1:8123/api/vacuum/start"
-	haReq, err := http.NewRequest("GET", haURL, nil)
+	haReq, err := http.NewRequest("POST", haURL, nil)
 	if err != nil {
 		http.Error(w, "Failed to create request", http.StatusInternalServerError)
 		return

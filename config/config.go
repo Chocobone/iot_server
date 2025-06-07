@@ -10,7 +10,7 @@ type Config struct {
 
 	// Home Assistant
 	Home_host  string `env:"HOME_URL" default:"127.0.0.1`
-	Home_port int    `env:"HOME_PORT" default:"8123"`
+	Home_port  int    `env:"HOME_PORT" default:"8123"`
 }
 
 func New() (*Config, error) {
