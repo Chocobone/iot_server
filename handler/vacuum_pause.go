@@ -10,11 +10,11 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type VacuumStart struct {
+type VacuumPause struct {
 	Validator *validator.Validate
 }
 
-func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (vs *VacuumPause) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -35,7 +35,7 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send request to Home Assistant API using the service name
-	haURL := "http://127.0.0.1:8123/api/vacuum/start"
+	haURL := "http://127.0.0.1:8123/api/vacuum/pause"
 	haReq, err := http.NewRequest("POST", haURL, nil)
 	if err != nil {
 		http.Error(w, "Failed to create request", http.StatusInternalServerError)

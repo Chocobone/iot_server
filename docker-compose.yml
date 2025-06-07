@@ -11,13 +11,24 @@ services:
       - .:/app
     ports:
       - "18000:8080"
-  # homeassistant:
-  #   container_name: homeassistant
-  #   image: "ghcr.io/home-assistant/home-assistant:stable"
-  #   volumes:
-  #     - /PATH_TO_YOUR_CONFIG:/config
-  #     - /etc/localtime:/etc/localtime:ro
-  #     - /run/dbus:/run/dbus:ro
-  #   restart: unless-stopped
-  #   privileged: true
-  #   network_mode: host
+    networks:
+      - iot_network
+    depends_on:
+      - homeassistant
+
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - ./HomeAssistant:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "8123:8123"
+    networks:
+      - iot_network
+
+networks:
+  iot_network:
+    driver: bridge

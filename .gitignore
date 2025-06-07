@@ -14,3 +14,6 @@ go.work.sum
 
 #env file
 .env
+
+#homeassistant files. it can download by docker-compose
+HomeAssistant/

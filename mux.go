@@ -17,8 +17,10 @@ func NewMux() http.Handler {
 	v := validator.New()
 	vs := &handler.VacuumStart{Validator: v}
 	mux.Post("/vacuum/start", vs.ServeHTTP)
-	//mux.Handle("/vacuum/pause", handler.NewVacuumPause(v))
-	//mux.Handle("/vacuum/return", handler.NewVacuumReturn(v))
+	vp := &handler.VacuumPause{Validator: v}
+	mux.Post("/vacuum/pause", vp.ServeHTTP)
+	vr := &handler.VacuumReturn{Validator: v}
+	mux.Post("/vacuum/return", vr.ServeHTTP)
 
 	return mux
 }
