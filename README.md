@@ -2,24 +2,27 @@
 
 IoT Server는 Home Assistant와 연동하여 IoT 기기를 제어하는 서버입니다.
 
-## 프로젝트 구조
+## 프로젝트 시스템 아키텍처
+![아키텍처](./project_architecture.png)
+
+## 프로젝트 구조(서버)
 
 ```
 iot_server/
-├── config/                 # 설정 파일 디렉토리
-├── entity/                 # 도메인 엔티티 정의
-│   └── vacuum.go          # 진공청소기 엔티티 정의
+├── config/                # 설정 파일 디렉토리
+├── entity/                # 도메인 엔티티 정의
+│   └── vacuum.go          
 ├── handler/               # HTTP 핸들러
 │   ├── response.go        # 공통 응답 처리
 │   ├── vacuum_start.go    # 청소 시작 핸들러
 │   ├── vacuum_pause.go    # 청소 일시정지 핸들러
 │   └── vacuum_return.go   # 청소기 귀환 핸들러
-├── store/                 # 데이터 저장소
-│   └── store.go          # 저장소 인터페이스
-├── HomeAssistant/         # Home Assistant 설정
-├── .air.toml             # Air 설정 (Hot Reload)
-├── docker-compose.yml    # Docker Compose 설정
-├── Dockerfile            # Docker 빌드 설정
+├── store/                 # 데이터 저장소(차후 DB 적용시 사용 예정)
+│   └── store.go          
+├── HomeAssistant/       # Home Assistant 이미지 업로드드
+├── .air.toml            # Air 설정 (Hot Reload)
+├── docker-compose.yml   # Docker Compose 설정
+├── Dockerfile           # Docker 빌드 설정
 ├── go.mod               # Go 모듈 정의
 ├── go.sum               # Go 모듈 체크섬
 ├── LICENSE              # MIT 라이선스
@@ -65,6 +68,12 @@ docker-compose up
 4. 서비스 접속
 - IoT Server: http://localhost:18000
 - Home Assistant: http://localhost:8123
+
+### 테스트 실행
+아래 명령어로 서버 테스트를 진행할 수 있습니다
+```go
+go test -c
+```
 
 ## API 엔드포인트
 
