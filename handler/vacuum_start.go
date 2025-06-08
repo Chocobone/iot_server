@@ -18,6 +18,10 @@ type VacuumStart struct {
 }
 
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// Add CORS headers
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	// Handle preflight OPTIONS request
 	if r.Method == http.MethodOptions {
@@ -52,21 +56,14 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Add detailed validation error logging
 	if err := vs.Validator.Struct(request); err != nil {
-		fmt.Printf("Validation error: %v\n", err)
-		if validationErrors, ok := err.(validator.ValidationErrors); ok {
-			for _, e := range validationErrors {
-				fmt.Printf("Field: %s, Tag: %s, Value: %v\n", e.Field(), e.Tag(), e.Value())
-			}
-		}
 		http.Error(w, "Validation failed", http.StatusBadRequest)
 		return
 	}
 
 	// Prepare payload for Home Assistant API
 	payload := map[string]string{
-		"entity_id": vs.VacuumID,
+		"vacuum_id": vs.VacuumID,
 	}
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
@@ -75,32 +72,26 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send request to Home Assistant API
-	haURL := "http://127.0.0.1:8123/api/services/vacuum/start"
-	fmt.Printf("Sending request to Home Assistant: %s\n", haURL)
-	fmt.Printf("Request payload: %s\n", string(jsonPayload))
-
+	haURL := "http://homeassistant:8123/api/services/vacuum/start"
 	haReq, err := http.NewRequest("POST", haURL, bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		http.Error(w, "Failed to create request", http.StatusInternalServerError)
+		return
+	}
+	// Add required headers
 	haReq.Header.Set("Authorization", "Bearer "+vs.Token)
 	haReq.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(haReq)
 	if err != nil {
-		fmt.Printf("Failed to send request to Home Assistant: %v\n", err)
-		http.Error(w, fmt.Sprintf("Failed to send request to Home Assistant: %v", err), http.StatusInternalServerError)
+		http.Error(w, "Failed to send request to Home Assistant", http.StatusInternalServerError)
 		return
 	}
 	defer resp.Body.Close()
 
-	// Read and log the response body
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("Failed to read response body: %v\n", err)
-	}
-	fmt.Printf("Home Assistant response status: %d\n", resp.StatusCode)
-	fmt.Printf("Home Assistant response body: %s\n", string(body))
-
 	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
 		http.Error(w, fmt.Sprintf("Home Assistant API error: %s", string(body)), resp.StatusCode)
 		return
 	}
