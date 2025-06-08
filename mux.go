@@ -18,7 +18,7 @@ func NewMux() http.Handler {
 	token := handler.GetSecret()
 	entityID := handler.GetEntityID()
 	vs := &handler.VacuumStart{Validator: v, Token: token, EntityID: entityID}
-	mux.Post("/vacuum/start", vs.ServeHTTP)
+	mux.HandleFunc("/vacuum/start", vs.ServeHTTP)
 	vp := &handler.VacuumPause{Validator: v}
 	mux.Post("/vacuum/pause", vp.ServeHTTP)
 	vr := &handler.VacuumReturn{Validator: v}
