@@ -72,7 +72,7 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send request to Home Assistant API
-	baseURL := vs.Config.GetHomeAssistantBaseURL()
+	baseURL := "http://127.0.0.1:8123"
 	haURL := fmt.Sprintf("%s/api/services/vacuum/start", baseURL)
 	fmt.Printf("Home Assistant base URL: %s\n", baseURL)
 	fmt.Printf("Full Home Assistant URL: %s\n", haURL)
