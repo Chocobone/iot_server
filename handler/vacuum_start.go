@@ -52,7 +52,14 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Add detailed validation error logging
 	if err := vs.Validator.Struct(request); err != nil {
+		fmt.Printf("Validation error: %v\n", err)
+		if validationErrors, ok := err.(validator.ValidationErrors); ok {
+			for _, e := range validationErrors {
+				fmt.Printf("Field: %s, Tag: %s, Value: %v\n", e.Field(), e.Tag(), e.Value())
+			}
+		}
 		http.Error(w, "Validation failed", http.StatusBadRequest)
 		return
 	}
@@ -73,13 +80,6 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Request payload: %s\n", string(jsonPayload))
 
 	haReq, err := http.NewRequest("POST", haURL, bytes.NewBuffer(jsonPayload))
-	if err != nil {
-		fmt.Printf("Failed to create request: %v\n", err)
-		http.Error(w, "Failed to create request", http.StatusInternalServerError)
-		return
-	}
-
-	// Add required headers
 	haReq.Header.Set("Authorization", "Bearer "+vs.Token)
 	haReq.Header.Set("Content-Type", "application/json")
 
