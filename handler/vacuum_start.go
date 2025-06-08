@@ -30,10 +30,9 @@ func NewVacuumStart(v *validator.Validate, token, vacuumID string, cfg *config.C
 
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	payload := []byte(`{"vacuum_id": "vacuum.robosceongsogi"}`)
-
 	// Send request to Home Assistant API
 	haURL := fmt.Sprintf("%s/api/services/vacuum/start", vs.Config.HomeAssistantURL())
+	payload := []byte(`{"vacuum_id": "vacuum.robosceongsogi"}`)
 	haReq, err := http.NewRequest("POST", haURL, bytes.NewBuffer(payload))
 	if err != nil {
 		http.Error(w, "Failed to create request", http.StatusInternalServerError)
@@ -45,16 +44,12 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	client := &http.Client{}
 	resp, err := client.Do(haReq)
 	if err != nil {
-		http.Error(w, "Failed to send request to Home Assistant", http.StatusInternalServerError)
-		return
+		panic(err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		http.Error(w, fmt.Sprintf("Home Assistant API error: %s", string(body)), resp.StatusCode)
-		return
-	}
+	body, _ := io.ReadAll(resp.Body)
+	w.Write(body)
 
 	// Return success response
 	w.Header().Set("Content-Type", "application/json")
