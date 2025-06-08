@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/Chocobone/iot_server/config"
 	"github.com/Chocobone/iot_server/entity"
 	"github.com/go-playground/validator/v10"
 )
@@ -15,6 +16,7 @@ type VacuumStart struct {
 	Validator *validator.Validate
 	Token     string // Home Assistant API token
 	VacuumID  string // Vacuum entity ID
+	Config    *config.Config
 }
 
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +70,7 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send request to Home Assistant API
-	haURL := "http://homeassistant:8123/api/services/vacuum/start"
+	haURL := fmt.Sprintf("%s/api/services/vacuum/start", vs.Config.GetHomeAssistantBaseURL())
 	fmt.Printf("Sending request to Home Assistant: %s\n", haURL)
 	fmt.Printf("Request payload: %s\n", string(jsonPayload))
 
