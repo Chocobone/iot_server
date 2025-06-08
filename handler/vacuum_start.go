@@ -8,7 +8,7 @@ import (
 	"net/http"
 
 	"github.com/Chocobone/iot_server/config"
-	"github.com/Chocobone/iot_server/entity"
+	//"github.com/Chocobone/iot_server/entity"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -29,10 +29,51 @@ func NewVacuumStart(v *validator.Validate, token, vacuumID string, cfg *config.C
 }
 
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// Add CORS headers
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	payload := map[string]string{
+		"vacuum_id": vs.VacuumID,
+	}
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		http.Error(w, "Failed to prepare request payload", http.StatusInternalServerError)
+		return
+	}
+
+	// Send request to Home Assistant API
+	haURL := fmt.Sprintf("%s/api/services/vacuum/start", vs.Config.HomeAssistantURL())
+	haReq, err := http.NewRequest("POST", haURL, bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		http.Error(w, "Failed to create request", http.StatusInternalServerError)
+		return
+	}
+	// Add required headers
+	haReq.Header.Set("Authorization", "Bearer "+vs.Token)
+	haReq.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(haReq)
+	if err != nil {
+		http.Error(w, "Failed to send request to Home Assistant", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		http.Error(w, fmt.Sprintf("Home Assistant API error: %s", string(body)), resp.StatusCode)
+		return
+	}
+
+	// Return success response
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{
+		"status":  "success",
+		"message": "Vacuum cleaning started",
+	})
+}
+
+/*
+func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Handle preflight OPTIONS request
 	if r.Method == http.MethodOptions {
@@ -114,6 +155,7 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"message": "Vacuum cleaning started",
 	})
 }
+*/
 
 /*
 func main() {
