@@ -48,7 +48,7 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	// Add required headers
 	haReq.Header.Set("Authorization", "Bearer "+vs.Token)
-	haReq.Header.Set("Content-Type", "application/json")
+	haReq.Header.Set("content-type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(haReq)
