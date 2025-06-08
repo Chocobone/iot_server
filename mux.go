@@ -15,8 +15,8 @@ func NewMux() http.Handler {
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
 	v := validator.New()
-	token := &handler.GetSecret()
-	entityID := &handler.GetEntityID()
+	token := handler.GetSecret()
+	entityID := handler.GetEntityID()
 	vs := &handler.VacuumStart{Validator: v, Token: token, EntityID: entityID}
 	mux.Post("/vacuum/start", vs.ServeHTTP)
 	vp := &handler.VacuumPause{Validator: v}
