@@ -11,7 +11,7 @@ type Config struct {
 	Port int    `env:"PORT" default:"8080"`
 
 	// Home Assistant
-	HomeHost string `env:"HOME_HOST" default:"homeassistant"`
+	HomeHost string `env:"HOME_HOST" default:"172.17.0.1"`
 	HomePort int    `env:"HOME_PORT" default:"8123"`
 }
 
