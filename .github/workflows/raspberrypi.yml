@@ -14,13 +14,12 @@ jobs:
 
     steps:
       - name: pull code on raspberrypi
-        uses: appleboy/ssh-action@1.2.2
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.RASPBERRYPI_HOST }}
-          username: ${{ secrets.RASPBERRYPI_USERNAME }}
-          key: ${{ secrets.RASPBERRYPI_KEY }}
-          port: 22
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
           script: |
-            cd ~/iot_server
-            git pull origin main
-            docker compose restart
+            cd ~/pi_github_action
+            sudo ./deploy.sh
