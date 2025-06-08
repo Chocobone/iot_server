@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/Chocobone/iot_server/config"
 	"github.com/Chocobone/iot_server/handler"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
@@ -15,8 +16,8 @@ func NewMux() http.Handler {
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
 	v := validator.New()
-	token := handler.GetSecret()
-	VacuumID := handler.GetVacuumID()
+	token := config.GetSecret()
+	VacuumID := config.GetVacuumID()
 	vs := &handler.VacuumStart{Validator: v, Token: token, VacuumID: VacuumID}
 	mux.Post("/vacuum/start", vs.ServeHTTP)
 	vp := &handler.VacuumPause{Validator: v}
