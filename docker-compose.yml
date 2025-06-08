@@ -28,7 +28,3 @@ services:
       - "8123:8123"
     expose:
       - "8123"
-
-networks:
-  iot_network:
-    driver: bridge
