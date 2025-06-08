@@ -13,8 +13,6 @@ services:
       - .:/app
     ports:
       - "18000:8080"
-    networks:
-      - iot_network
     depends_on:
       - homeassistant
 
@@ -28,8 +26,8 @@ services:
     privileged: true
     ports:
       - "8123:8123"
-    networks:
-      - iot_network
+    expose:
+      - "8123"
 
 networks:
   iot_network:
