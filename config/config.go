@@ -16,7 +16,7 @@ type Config struct {
 }
 
 func (c *Config) GetHomeAssistantBaseURL() string {
-	return fmt.Sprintf("%s:%d", c.HomeAssistantURL, c.HomeAssistantPort)
+	return fmt.Sprintf("http://%s:%d", c.HomeAssistantURL, c.HomeAssistantPort)
 }
 
 func New() (*Config, error) {
