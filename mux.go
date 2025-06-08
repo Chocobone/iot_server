@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Chocobone/iot_server/config"
@@ -16,21 +15,10 @@ func NewMux() http.Handler {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		_, _ = w.Write([]byte(`{"status": "ok"}`))
 	})
-
-	cfg, err := config.New()
-	if err != nil {
-		panic(fmt.Sprintf("failed to load config: %v", err))
-	}
-
 	v := validator.New()
 	token := config.GetSecret()
 	VacuumID := config.GetVacuumID()
-	vs := &handler.VacuumStart{
-		Validator: v,
-		Token:     token,
-		VacuumID:  VacuumID,
-		Config:    cfg,
-	}
+	vs := &handler.VacuumStart{Validator: v, Token: token, VacuumID: VacuumID}
 	mux.Post("/vacuum/start", vs.ServeHTTP)
 	vp := &handler.VacuumPause{Validator: v}
 	mux.Post("/vacuum/pause", vp.ServeHTTP)

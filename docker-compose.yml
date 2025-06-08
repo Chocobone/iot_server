@@ -7,8 +7,6 @@ services:
     environment:
       ENV: dev
       PORT: 8080
-      HOME_ASSISTANT_URL: "http://localhost"
-      HOME_ASSISTANT_PORT: "8123"
     volumes:
       - .:/app
     ports:

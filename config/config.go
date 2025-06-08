@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/caarlos0/env/v6"
 )
 
@@ -11,12 +9,8 @@ type Config struct {
 	Port int    `env:"PORT" default:"8080"`
 
 	// Home Assistant
-	HomeAssistantURL  string `env:"HOME_ASSISTANT_URL" default:"http://localhost"`
-	HomeAssistantPort int    `env:"HOME_ASSISTANT_PORT" default:"8123"`
-}
-
-func (c *Config) GetHomeAssistantBaseURL() string {
-	return fmt.Sprintf("http://%s:%d", c.HomeAssistantURL, c.HomeAssistantPort)
+	Home_url  string `env:"HOME_URL" default:"127.0.0.1`
+	Home_port int    `env:"HOME_PORT" default:"8123"`
 }
 
 func New() (*Config, error) {

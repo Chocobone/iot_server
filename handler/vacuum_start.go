@@ -6,9 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 
-	"github.com/Chocobone/iot_server/config"
 	"github.com/Chocobone/iot_server/entity"
 	"github.com/go-playground/validator/v10"
 )
@@ -17,7 +15,6 @@ type VacuumStart struct {
 	Validator *validator.Validate
 	Token     string // Home Assistant API token
 	VacuumID  string // Vacuum entity ID
-	Config    *config.Config
 }
 
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -66,30 +63,19 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Printf("Failed to marshal payload: %v\n", err)
 		http.Error(w, "Failed to prepare request payload", http.StatusInternalServerError)
 		return
 	}
 
 	// Send request to Home Assistant API
-	baseURL := "http://127.0.0.1:8123"
-	haURL := fmt.Sprintf("%s/api/services/vacuum/start", baseURL)
-	fmt.Printf("Home Assistant base URL: %s\n", baseURL)
-	fmt.Printf("Full Home Assistant URL: %s\n", haURL)
+	haURL := "http://127.0.0.1:8123/api/services/vacuum/start"
+	fmt.Printf("Sending request to Home Assistant: %s\n", haURL)
 	fmt.Printf("Request payload: %s\n", string(jsonPayload))
-	fmt.Printf("Token being used: %s\n", vs.Token)
-
-	// Validate URL format
-	if _, err := url.Parse(haURL); err != nil {
-		fmt.Printf("Invalid URL format: %v\n", err)
-		http.Error(w, fmt.Sprintf("Invalid URL format: %v", err), http.StatusInternalServerError)
-		return
-	}
 
 	haReq, err := http.NewRequest("POST", haURL, bytes.NewBuffer(jsonPayload))
 	if err != nil {
-		fmt.Printf("Failed to create request: %v\nURL: %s\nPayload: %s\n", err, haURL, string(jsonPayload))
-		http.Error(w, fmt.Sprintf("Failed to create request: %v", err), http.StatusInternalServerError)
+		fmt.Printf("Failed to create request: %v\n", err)
+		http.Error(w, "Failed to create request", http.StatusInternalServerError)
 		return
 	}
 
