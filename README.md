@@ -9,6 +9,7 @@ IoT Server는 Home Assistant와 연동하여 IoT 기기를 제어하는 서버�
 
 ```
 iot_server/
+├── .github/workflows      # github actions 통한 자동화
 ├── config/                # 설정 파일 디렉토리
 ├── entity/                # 도메인 엔티티 정의
 │   └── vacuum.go          

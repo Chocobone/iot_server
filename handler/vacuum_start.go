@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,13 +13,15 @@ import (
 
 type VacuumStart struct {
 	Validator *validator.Validate
+	Token     string // Home Assistant API token
+	EntityID  string // Vacuum entity ID
 }
 
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Add CORS headers
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	// Handle preflight OPTIONS request
 	if r.Method == http.MethodOptions {
@@ -45,13 +48,27 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send request to Home Assistant API using the service name
-	haURL := "http://127.0.0.1:8123/api/vacuum/start"
-	haReq, err := http.NewRequest("POST", haURL, nil)
+	// Prepare payload for Home Assistant API
+	payload := map[string]string{
+		"entity_id": vs.EntityID,
+	}
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		http.Error(w, "Failed to prepare request payload", http.StatusInternalServerError)
+		return
+	}
+
+	// Send request to Home Assistant API
+	haURL := "http://127.0.0.1:8123/api/services/vacuum/start"
+	haReq, err := http.NewRequest("POST", haURL, bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		http.Error(w, "Failed to create request", http.StatusInternalServerError)
 		return
 	}
+
+	// Add required headers
+	haReq.Header.Set("Authorization", "Bearer "+vs.Token)
+	haReq.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(haReq)
@@ -74,3 +91,31 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		"message": "Vacuum cleaning started",
 	})
 }
+
+/*
+func main() {
+    http.HandlerFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        w.WriteHeader(http.StatusOK)
+        w.Write([]byte("Hello, World!"))
+    })
+	http.HandlerFunc("/vacuum/start", func(w http.ResponseWriter, r *http.Request){
+	    url := "https://localhost:8123/api/services/vacuum/start"
+		token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYjYwYWJkOTRlN2M0YTZjODkyMzQ3Y2JjOTgzZWUxYSIsImlhdCI6MTc0NzAyMTI5NCwiZXhwIjoyMDYyMzgxMjk0fQ.7mybkEqIh7coIRrVxkno8I1iTXCDz5wipB9rpomVUB0"
+		payload := []byte(`{"entity_id": "vacuum.robosceongsogi"}`)
+
+		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
+		req.Header.Set("Authorization", "Bearer "+token)
+		req.Header.Set("Content-Type", "application/json")
+
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+		    panic(err)
+		}
+	    defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+		w.Write(body)
+	})
+    http.ListenAndServe(":8080", nil)
+} */
