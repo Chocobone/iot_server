@@ -29,10 +29,10 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//if r.Method != http.MethodPost {
-	//	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-	//	return
-	//}
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 
 	var request struct {
 		VacuumToken entity.VacuumToken `json:"vacuum_token" validate:"required"`
