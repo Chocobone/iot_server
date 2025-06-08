@@ -13,13 +13,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
       - name: pull code on raspberrypi
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          port: ${{ secrets.PORT }}
-          script: |
-            cd ~/pi_github_action
-            sudo ./deploy.sh
+        run:  git pull origin main
+
+      - name: re-build docker image
+        run: docker compose restart

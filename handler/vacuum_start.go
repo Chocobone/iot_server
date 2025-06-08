@@ -14,7 +14,7 @@ import (
 type VacuumStart struct {
 	Validator *validator.Validate
 	Token     string // Home Assistant API token
-	EntityID  string // Vacuum entity ID
+	VacuumID  string // Vacuum entity ID
 }
 
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -50,7 +50,7 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Prepare payload for Home Assistant API
 	payload := map[string]string{
-		"entity_id": vs.EntityID,
+		"vacuum_id": vs.VacuumID,
 	}
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
@@ -65,7 +65,6 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to create request", http.StatusInternalServerError)
 		return
 	}
-
 	// Add required headers
 	haReq.Header.Set("Authorization", "Bearer "+vs.Token)
 	haReq.Header.Set("Content-Type", "application/json")
@@ -101,7 +100,7 @@ func main() {
 	http.HandlerFunc("/vacuum/start", func(w http.ResponseWriter, r *http.Request){
 	    url := "https://localhost:8123/api/services/vacuum/start"
 		token := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkYjYwYWJkOTRlN2M0YTZjODkyMzQ3Y2JjOTgzZWUxYSIsImlhdCI6MTc0NzAyMTI5NCwiZXhwIjoyMDYyMzgxMjk0fQ.7mybkEqIh7coIRrVxkno8I1iTXCDz5wipB9rpomVUB0"
-		payload := []byte(`{"entity_id": "vacuum.robosceongsogi"}`)
+		payload := []byte(`{"vacuum_id": "vacuum.robosceongsogi"}`)
 
 		req, _ := http.NewRequest("POST", url, bytes.NewBuffer(payload))
 		req.Header.Set("Authorization", "Bearer "+token)
