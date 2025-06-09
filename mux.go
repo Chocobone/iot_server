@@ -25,10 +25,9 @@ func NewMux() http.Handler {
 	v := validator.New()
 	token := config.GetSecret()
 	vacuumID := config.GetVacuumID()
+
 	vs := handler.NewVacuumStart(v, token, vacuumID, cfg)
 	mux.Post("/vacuum/start", vs.ServeHTTP)
-	vt := handler.NewVacuumStop(v, token, vacuumID, cfg)
-	mux.Post("vacuum/stop", vt.ServeHTTP)
 	vp := handler.NewVacuumPause(v, token, vacuumID, cfg)
 	mux.Post("/vacuum/pause", vp.ServeHTTP)
 	vr := handler.NewVacuumReturn(v, token, vacuumID, cfg)
