@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/Chocobone/iot_server/config"
@@ -72,6 +73,8 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// Forward the response status code and body from Home Assistant
 	RespondJSON(r.Context(), w, json.RawMessage(body), resp.StatusCode)
+	log.Printf("Robot Vacuum Cleaning Started")
+
 }
 
 /*
