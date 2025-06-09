@@ -31,7 +31,17 @@ func NewVacuumStart(v *validator.Validate, token, vacuumID string, cfg *config.C
 func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// Send request to Home Assistant API
 	haURL := fmt.Sprintf("%s/api/services/vacuum/start", vs.Config.HomeAssistantURL())
-	payload := []byte(`{"vacuum_id": "vacuum.robosceongsogi"}`)
+	payloadData := map[string]string{
+		"entity_id": vs.VacuumID,
+	}
+	payload, err := json.Marshal(payloadData)
+	if err != nil {
+		// JSON 생성 실패 시 에러 처리
+		RespondJSON(r.Context(), w, ErrResponse{
+			Message: "Failed to create request payload",
+		}, http.StatusInternalServerError)
+		return
+	}
 	haReq, err := http.NewRequest("POST", haURL, bytes.NewBuffer(payload))
 	if err != nil {
 		RespondJSON(r.Context(), w, ErrResponse{
