@@ -27,7 +27,6 @@ func TestServer_Run(t *testing.T) {
 		return s.Run(ctx)
 	})
 	in := "message"
-	// どんなポート番号でリッスンしているのか確認
 	url := fmt.Sprintf("http://%s/%s", l.Addr().String(), in)
 	t.Logf("tray request to %q", url)
 	rsp, err := http.Get(url)
@@ -39,14 +38,10 @@ func TestServer_Run(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to read body: %v", err)
 	}
-
-	// サーバの終了動作を検証する
 	cancel()
 	if err := eg.Wait(); err != nil {
 		t.Fatal(err)
 	}
-
-	// 戻り値を検証する
 	want := fmt.Sprintf("Hello, %s!", in)
 	if string(got) != want {
 		t.Errorf("want %q, but got %q", want, got)
