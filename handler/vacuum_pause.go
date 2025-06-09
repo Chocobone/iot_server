@@ -1,65 +1,53 @@
 package handler
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
 	"io"
 	"net/http"
 
-	"github.com/Chocobone/iot_server/entity"
+	"github.com/Chocobone/iot_server/config"
+	//"github.com/Chocobone/iot_server/entity"
 	"github.com/go-playground/validator/v10"
 )
 
 type VacuumPause struct {
 	Validator *validator.Validate
+	Token     string // Home Assistant API token
+	VacuumID  string // Vacuum entity ID
+	Config    *config.Config
+}
+
+func NewVacuumPause(v *validator.Validate, token, vacuumID string, cfg *config.Config) *VacuumPause {
+	return &VacuumPause{
+		Validator: v,
+		Token:     token,
+		VacuumID:  vacuumID,
+		Config:    cfg,
+	}
 }
 
 func (vs *VacuumPause) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
 
-	var request struct {
-		VacuumToken entity.VacuumToken `json:"vacuum_token" validate:"required"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	if err := vs.Validator.Struct(request); err != nil {
-		http.Error(w, "Validation failed", http.StatusBadRequest)
-		return
-	}
-
-	// Send request to Home Assistant API using the service name
-	haURL := "http://127.0.0.1:8123/api/services/vacuum/pause"
-	haReq, err := http.NewRequest("POST", haURL, nil)
+	// Send request to Home Assistant API
+	haURL := fmt.Sprintf("%s/api/services/vacuum/pause", vs.Config.HomeAssistantURL())
+	payload := []byte(`{"vacuum_id": "vacuum.robosceongsogi"}`)
+	haReq, err := http.NewRequest("POST", haURL, bytes.NewBuffer(payload))
 	if err != nil {
-		http.Error(w, "Failed to create request", http.StatusInternalServerError)
+		http.Error(w, "Failed to create reques t", http.StatusInternalServerError)
 		return
 	}
+	haReq.Header.Set("Authorization", "Bearer "+vs.Token)
+	haReq.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 	resp, err := client.Do(haReq)
 	if err != nil {
-		http.Error(w, "Failed to send request to Home Assistant", http.StatusInternalServerError)
-		return
+		panic(err)
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		http.Error(w, fmt.Sprintf("Home Assistant API error: %s", string(body)), resp.StatusCode)
-		return
-	}
+	body, _ := io.ReadAll(resp.Body)
+	w.Write(body)
 
-	// Return success response
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"status":  "success",
-		"message": "Vacuum cleaning started",
-	})
 }

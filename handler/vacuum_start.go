@@ -2,7 +2,6 @@ package handler
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -51,12 +50,6 @@ func (vs *VacuumStart) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	body, _ := io.ReadAll(resp.Body)
 	w.Write(body)
 
-	// Return success response
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"status":  "success",
-		"message": "Vacuum cleaning started",
-	})
 }
 
 /*
